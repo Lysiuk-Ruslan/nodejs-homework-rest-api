@@ -61,6 +61,7 @@ const updateStatusContact = async (req, res) => {
         throw HttpError(404, "Not Found");
     }
     res.json(result);
+
 }
 
 

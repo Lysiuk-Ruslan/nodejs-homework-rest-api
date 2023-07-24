@@ -2,7 +2,7 @@ const express = require('express');
 
 const ctrl = require('../../controllers/contacts');
 
-const { validateBody, isValidId } = require("../../middlewares");
+const { validateBody, isValidId, validateBodyFavorite } = require("../../middlewares");
 
 const { schemas } = require("../../models/contact")
 
@@ -26,7 +26,7 @@ router.put('/:contactId', isValidId, validateBody(schemas.addSchema), ctrl.chang
 
 // Маршрут для оновлення вказаного поля контакта
 
-router.patch('/:contactId/favorite', isValidId, validateBody(schemas.updateFavoriteSchema), ctrl.updateStatusContact)
+router.patch('/:contactId/favorite', isValidId, validateBodyFavorite(schemas.updateFavoriteSchema), ctrl.updateStatusContact)
 
 // Маршрут для видалення контакту за ідентифікатором
 
