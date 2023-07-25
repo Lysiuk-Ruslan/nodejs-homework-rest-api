@@ -1,8 +1,8 @@
-const validateBody = (schema) => {
+const validateBodyFavorite = (schema) => {
     const func = (req, res, next) => {
         if (Object.keys(req.body).length === 0 && req.body.constructor === Object) {
             res.status(400).json({
-                message: "missing field",
+                message: "missing field favorite",
             });
             return;
         }
@@ -22,4 +22,4 @@ const validateBody = (schema) => {
 
 
 
-module.exports = validateBody;
+module.exports = validateBodyFavorite;

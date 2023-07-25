@@ -1,4 +1,4 @@
-const contacts = require("../models/contacts");
+const { Contact } = require("../models/contact");
 
 const { HttpError, ctrlWrapper } = require("../utils");
 
@@ -8,7 +8,7 @@ const { HttpError, ctrlWrapper } = require("../utils");
 
 const listContacts = async (req, res) => {
 
-    const result = await contacts.listContacts();
+    const result = await Contact.find();
     res.json(result)
 }
 
@@ -17,7 +17,7 @@ const listContacts = async (req, res) => {
 const getContactById = async (req, res) => {
 
     const { contactId } = req.params;
-    const result = await contacts.getContactById(contactId);
+    const result = await Contact.findById(contactId);
     if (!result) {
         throw HttpError(404, "Not Found");
     }
@@ -31,7 +31,7 @@ const getContactById = async (req, res) => {
 
 const addContact = async (req, res) => {
 
-    const result = await contacts.addContact(req.body);
+    const result = await Contact.create(req.body);
     if (!result) {
         throw HttpError(404, "Not Found");
     }
@@ -44,19 +44,33 @@ const addContact = async (req, res) => {
 const changeContact = async (req, res) => {
 
     const { contactId } = req.params;
-    const result = await contacts.updateContact(contactId, req.body);
+    const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
     if (!result) {
         throw HttpError(404, "Not Found");
     }
     res.json(result);
 }
 
+// Функція яка обробляє запит PATCH для оновлення вказаного поля контакта
+
+const updateStatusContact = async (req, res) => {
+
+    const { contactId } = req.params;
+    const result = await Contact.findByIdAndUpdate(contactId, req.body, { new: true });
+    if (!result) {
+        throw HttpError(404, "Not Found");
+    }
+    res.json(result);
+
+}
+
+
 // Функція яка обробляє запит DELETE для видалення контакту за ідентифікатором
 
 const removeContact = async (req, res) => {
 
     const { contactId } = req.params;
-    const result = await contacts.removeContact(contactId);
+    const result = await Contact.findByIdAndRemove(contactId);
     if (!result) {
         throw HttpError(404, "Not Found");
     }
@@ -72,5 +86,6 @@ module.exports = {
     getContactById: ctrlWrapper(getContactById),
     addContact: ctrlWrapper(addContact),
     changeContact: ctrlWrapper(changeContact),
+    updateStatusContact: ctrlWrapper(updateStatusContact),
     removeContact: ctrlWrapper(removeContact),
 };
