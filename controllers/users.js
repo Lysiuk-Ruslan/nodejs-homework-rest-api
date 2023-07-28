@@ -41,6 +41,8 @@ const login = async (req, res) => {
         throw HttpError(401, "Email or password invalid.");
     }
 
+    const userLogin = { email: user.email, subscription: user.subscription };
+
     const payload = {
         id: user.id,
     };
@@ -48,9 +50,8 @@ const login = async (req, res) => {
     const token = jwt.sign(payload, SECRET_KEY, { expiresIn: "23h" })
     res.json({
         token,
+        user: userLogin
     })
-
-
 }
 
 
