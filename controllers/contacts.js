@@ -7,8 +7,17 @@ const { HttpError, ctrlWrapper } = require("../utils");
 // Функція яка обробляє запит GET для отримання списку всіх контактів.
 
 const listContacts = async (req, res) => {
+    const { _id: owner } = req.user;
 
-    const result = await Contact.find();
+    const { page = 1, limit = 20, favorite } = req.query;
+    const skip = (page - 1) * limit;
+
+    const filter = { owner };
+    if (favorite && favorite === "true") {
+        filter.favorite = true;
+    };
+
+    const result = await Contact.find(filter, { skip, limit });
     res.json(result)
 }
 
@@ -30,8 +39,8 @@ const getContactById = async (req, res) => {
 // Функція яка обробляє запит POST для додавання нового контакту.
 
 const addContact = async (req, res) => {
-
-    const result = await Contact.create(req.body);
+    const { _id: owner } = req.user;
+    const result = await Contact.create({ ...req.body, owner });
     if (!result) {
         throw HttpError(404, "Not Found");
     }
