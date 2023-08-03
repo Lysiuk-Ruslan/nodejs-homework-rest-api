@@ -1,11 +1,17 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar');
+const path = require('path');
+const fs = require('fs/promises');
+const Jimp = require('jimp');
 
 const { User } = require("../models/user");
 
 const { HttpError, ctrlWrapper } = require("../utils");
 
 const { SECRET_KEY } = process.env;
+
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
 
 // Функція яка обробляє запит POST для реєстрації користувача.
 
@@ -18,8 +24,9 @@ const register = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
+    const avatarURL = gravatar.url(email);
 
-    const newUser = await User.create({ ...req.body, password: hashPassword });
+    const newUser = await User.create({ ...req.body, password: hashPassword, avatarURL });
     const userRegister = { email: newUser.email, subscription: newUser.subscription };
     const object = { user: userRegister };
 
@@ -89,6 +96,19 @@ const updateStatusUser = async (req, res) => {
     res.json(user);
 }
 
+const updateAvatarsUser = async (req, res) => {
+    const { _id } = req.user;
+    const { path: tempUpload, filename } = req.file;
+    const avatarName = `${_id}_${filename}`;
+    const resultUpload = path.join(avatarsDir, avatarName);
+    await fs.rename(tempUpload, resultUpload);
+    const avatarURL = path.join("avatars", avatarName);
+    await User.findByIdAndUpdate(_id, { avatarURL });
+    const avatarImage = await Jimp.read(resultUpload);
+    await avatarImage.resize(250, 250).write(resultUpload);
+    res.json({ avatarURL });
+
+}
 
 module.exports = {
     register: ctrlWrapper(register),
@@ -96,6 +116,7 @@ module.exports = {
     Current: ctrlWrapper(Current),
     logout: ctrlWrapper(logout),
     updateStatusUser: ctrlWrapper(updateStatusUser),
+    updateAvatarsUser: ctrlWrapper(updateAvatarsUser),
 }
 
 
