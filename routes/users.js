@@ -1,7 +1,7 @@
 const express = require('express');
 const ctrl = require("../controllers/users");
 
-const { validateBody, authenticate } = require('../middleware');
+const { validateBody, authenticate, upload } = require('../middleware');
 
 const { schemas } = require("../models/user");
 
@@ -25,6 +25,11 @@ router.post("/logout", authenticate, ctrl.logout);
 
 // Маршрут для оновлення підписки користувача
 
-router.patch("/users", ctrl.updateStatusUser);
+router.patch("/users", authenticate, ctrl.updateStatusUser);
+
+//  Маршрут для зміни аватар користувача
+
+router.patch("/avatars", authenticate, upload.single("avatar"), ctrl.updateAvatarsUser);
+
 
 module.exports = router;
