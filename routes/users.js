@@ -11,6 +11,14 @@ const router = express.Router();
 
 router.post("/register", validateBody(schemas.registerSchema), ctrl.register);
 
+// Маршрут для верифікації користувача
+
+router.get("/verify/:verificationToken", ctrl.verifyEmail);
+
+// Маршрут для повторої верифікації користувача
+
+router.post("/verify", validateBody(schemas.emailSchema), ctrl.resendVerifyEmail);
+
 // Маршрут для авторизації користувача (signin routes)
 
 router.post("/login", validateBody(schemas.loginSchema), ctrl.login);
